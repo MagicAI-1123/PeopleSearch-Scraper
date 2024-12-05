@@ -19,3 +19,5 @@ screenshots
 .venv
 .env
 **/__pycache__
+
+!requirements.txt
