@@ -24,7 +24,8 @@ from typing import Dict, List
 keyword = ""
 
 BASE_URL = "https://boardreader.com/s/{}.html;page={}"
-PAGES_TO_SCRAPE = [1, 2, 3, 4]  # The pages we want to scrape
+PAGES_TO_SCRAPE = [1]  # The pages we want to scrape
+MAX_WORKERS = 1
 
 def keywords_to_url(base_url, keywords):  
     # Encode the keywords  
@@ -176,7 +177,7 @@ def run_parallel_scrapers(keyword: str) -> Dict[str, List]:
     # for i in range(1, 5):
     #     run_single_scraper(keyword, i)
     # Create a thread pool with 4 workers
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         # Submit all scraping tasks
         future_to_page = {
             executor.submit(run_single_scraper, keyword, page): page 

@@ -36,7 +36,9 @@ class WebScraper:
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument('--ignore-certificate-errors')  
         chrome_options.add_argument("--user-data-dir=C:/Info_SeleniumChromeProfile")
+        chrome_options.add_experimental_option("debuggerAddress", "localhost:9222")
         
+
         # chrome_options.add_argument("--headless=new")  # Modern headless mode
         
         # Add performance-focused options
@@ -47,39 +49,39 @@ class WebScraper:
         chrome_options.add_argument('--disable-browser-side-navigation')
         
         # More aggressive content blocking
-        chrome_prefs = {
-            "profile.default_content_setting_values": {
-                "images": 2,
-                "media_stream": 2,
-                "plugins": 2,
-                "popups": 2,
-                "geolocation": 2,
-                "notifications": 2,
-                "auto_select_certificate": 2,
-                "fullscreen": 2,
-                "mouselock": 2,
-                "mixed_script": 2,
-                "media_stream_mic": 2,
-                "media_stream_camera": 2,
-                "protocol_handlers": 2,
-                "ppapi_broker": 2,
-                "automatic_downloads": 2,
-                "midi_sysex": 2,
-                "push_messaging": 2,
-                "ssl_cert_decisions": 2,
-                "metro_switch_to_desktop": 2,
-                "protected_media_identifier": 2,
-                "app_banner": 2,
-                "site_engagement": 2,
-                "durable_storage": 2
-            }
-        }
-        chrome_options.add_experimental_option("prefs", chrome_prefs)
+        # chrome_prefs = {
+        #     "profile.default_content_setting_values": {
+        #         "images": 2,
+        #         "media_stream": 2,
+        #         "plugins": 2,
+        #         "popups": 2,
+        #         "geolocation": 2,
+        #         "notifications": 2,
+        #         "auto_select_certificate": 2,
+        #         "fullscreen": 2,
+        #         "mouselock": 2,
+        #         "mixed_script": 2,
+        #         "media_stream_mic": 2,
+        #         "media_stream_camera": 2,
+        #         "protocol_handlers": 2,
+        #         "ppapi_broker": 2,
+        #         "automatic_downloads": 2,
+        #         "midi_sysex": 2,
+        #         "push_messaging": 2,
+        #         "ssl_cert_decisions": 2,
+        #         "metro_switch_to_desktop": 2,
+        #         "protected_media_identifier": 2,
+        #         "app_banner": 2,
+        #         "site_engagement": 2,
+        #         "durable_storage": 2
+        #     }
+        # }
+        # chrome_options.add_experimental_option("prefs", chrome_prefs)
         
         webdriver_service = Service(ChromeDriverManager().install())  
 
         driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)  
-        driver.maximize_window()
+        # driver.maximize_window()
         return driver
     
     # def take_screenshot(self, step_name):
@@ -114,21 +116,28 @@ class WebScraper:
         search_tabs = self.driver.execute_script("""return document.getElementsByClassName('search stabs')[0].getElementsByClassName('snav2')[0].getElementsByTagName('li')""")
         count = 0
         for search_tab in search_tabs:
-            print("search_tab", search_tab)
+            print("search_tab", search_tab.text)
             if search_tab.text.strip() == input_type:
                 print("search_tab: ", search_tab.text)
-                search_tab.click()
+                self.driver.execute_script("""arguments[0].getElementsByTagName('a')[0].click()""", search_tab)
                 break
             count += 1
         input_tab_position = count
 
     async def input_email(self):
+        # print("input_tab_position: ", input_tab_position)
         email_input = self.wait.until(EC.presence_of_element_located((By.ID, "email")))
+        email_input = self.driver.execute_script("""return document.getElementById('email')""")
+        placeholder = self.driver.execute_script("""return document.getElementById('email').getAttribute('placeholder')""")
+        print("email: ", email_input)
+        print("placeholder: ", placeholder)
         email_input.clear()
+        time.sleep(2)
         email_input.send_keys(email)
 
         try:
             self.driver.execute_script(f"""document.querySelectorAll('[type="submit"]')[{input_tab_position}].click()""")
+
         except Exception as e:
             print("no submit button found:", str(e))
             pass
@@ -396,19 +405,26 @@ class WebScraper:
 
     async def scrape_profile_links(self):
         try:
-            # Wait for the presence of at least one element with the class name
+            # Wait for table to be present
             self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "table")))
+            print("here1")
+            # Get the first table and its rows using JavaScript
+            rows_data = self.driver.execute_script("""
+                const table = document.querySelector('table');
+                const rows = Array.from(table.querySelectorAll('tr'));
+                return rows.map(row => {
+                    const cells = Array.from(row.querySelectorAll('td'));
+                    return cells.length >= 2 ? [cells[0].textContent, cells[1].textContent] : null;
+                }).filter(row => row !== null);
+            """)
             
-            # Find all elements with the class name
-            profile_links = self.driver.find_elements(By.TAG_NAME, "table")
-            
-            first_person = profile_links[0]
-            rows = first_person.find_elements(By.TAG_NAME, "tr")
-            for row in rows:
-                cells = row.find_elements(By.TAG_NAME, "td")
-                print(cells[0].text, cells[1].text)
-                self.result += f"{cells[0].text}, {cells[1].text}\n"
-            
+            print("here2")
+
+            # Process the returned data
+            for cell1, cell2 in rows_data:
+                print(cell1, cell2)
+                self.result += f"{cell1}, {cell2}\n"
+
         except Exception as e:
             print(f"Error in scrape_profile_links: {str(e)}")
             return []

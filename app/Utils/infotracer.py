@@ -29,7 +29,7 @@ license = ""
 class WebScraper:
     def __init__(self):  
         self.driver = self.initialize_driver()
-        self.wait = WebDriverWait(self.driver, 15)  # Reduced from 20 to 10 seconds
+        self.wait = WebDriverWait(self.driver, 20)  # Reduced from 20 to 10 seconds
         self.result = "-------------------------- Infotracer -----------------------------\n\n"
         # Create screenshots directory if it doesn't exist
         self.screenshot_dir = "screenshots"
@@ -41,6 +41,7 @@ class WebScraper:
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument('--ignore-certificate-errors')  
         chrome_options.add_argument("--user-data-dir=C:/Info_SeleniumChromeProfile")
+        chrome_options.add_experimental_option("debuggerAddress", "localhost:9222")
         
         # chrome_options.add_argument("--headless=new")  # Modern headless mode
         
@@ -52,44 +53,45 @@ class WebScraper:
         chrome_options.add_argument('--disable-browser-side-navigation')
         
         # More aggressive content blocking
-        chrome_prefs = {
-            "profile.default_content_setting_values": {
-                "images": 2,
-                "media_stream": 2,
-                "plugins": 2,
-                "popups": 2,
-                "geolocation": 2,
-                "notifications": 2,
-                "auto_select_certificate": 2,
-                "fullscreen": 2,
-                "mouselock": 2,
-                "mixed_script": 2,
-                "media_stream_mic": 2,
-                "media_stream_camera": 2,
-                "protocol_handlers": 2,
-                "ppapi_broker": 2,
-                "automatic_downloads": 2,
-                "midi_sysex": 2,
-                "push_messaging": 2,
-                "ssl_cert_decisions": 2,
-                "metro_switch_to_desktop": 2,
-                "protected_media_identifier": 2,
-                "app_banner": 2,
-                "site_engagement": 2,
-                "durable_storage": 2
-            }
-        }
-        chrome_options.add_experimental_option("prefs", chrome_prefs)
+        # chrome_prefs = {
+        #     "profile.default_content_setting_values": {
+        #         "images": 2,
+        #         "media_stream": 2,
+        #         "plugins": 2,
+        #         "popups": 2,
+        #         "geolocation": 2,
+        #         "notifications": 2,
+        #         "auto_select_certificate": 2,
+        #         "fullscreen": 2,
+        #         "mouselock": 2,
+        #         "mixed_script": 2,
+        #         "media_stream_mic": 2,
+        #         "media_stream_camera": 2,
+        #         "protocol_handlers": 2,
+        #         "ppapi_broker": 2,
+        #         "automatic_downloads": 2,
+        #         "midi_sysex": 2,
+        #         "push_messaging": 2,
+        #         "ssl_cert_decisions": 2,
+        #         "metro_switch_to_desktop": 2,
+        #         "protected_media_identifier": 2,
+        #         "app_banner": 2,
+        #         "site_engagement": 2,
+        #         "durable_storage": 2
+        #     }
+        # }
+        # chrome_options.add_experimental_option("prefs", chrome_prefs)
         
-        webdriver_service = Service(ChromeDriverManager().install())  
+        webdriver_service = Service(ChromeDriverManager().install())
 
-        driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)  
-        driver.maximize_window()
+        driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
+        # driver.maximize_window()
         return driver
     
-    async def scrape_website(self): 
+    async def scrape_website(self):
         # time.sleep(2)
         try:
+            print("here")
             self.driver.get(target_url)
             # sign in
             # await self.sign_in()
@@ -146,10 +148,14 @@ class WebScraper:
         try:
             email_input = self.wait.until(EC.presence_of_element_located((By.ID, "email")))
             email_input.clear()
+            time.sleep(1)
+
             email_input.send_keys(os.getenv("EMAIL"))
 
             password_input = self.wait.until(EC.presence_of_element_located((By.ID, "password")))
             password_input.clear()
+            time.sleep(1)
+
             password_input.send_keys(os.getenv("PASSWORD"))
 
             sign_in_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")))
@@ -183,10 +189,12 @@ class WebScraper:
     async def input_full_name(self):
         first_name_input = self.wait.until(EC.presence_of_element_located((By.ID, "firstName")))
         first_name_input.clear()
+        time.sleep(1)
         first_name_input.send_keys(first_name)
 
         last_name_input = self.wait.until(EC.presence_of_element_located((By.ID, "lastName")))
         last_name_input.clear()
+        time.sleep(1)
         last_name_input.send_keys(last_name)        
         
         state_dropdown = Select(self.wait.until(EC.presence_of_element_located((By.ID, "state"))))
@@ -201,8 +209,9 @@ class WebScraper:
     async def input_phone(self):
         phone_input = self.wait.until(EC.presence_of_element_located((By.ID, "phone")))
         phone_input.clear()
+        time.sleep(1)
         phone_input.send_keys(phone)
-
+        
         try:
             self.driver.execute_script(f"""document.querySelectorAll('[type="submit"]')[{input_tab_position}].click()""")
         except Exception as e:
@@ -215,6 +224,7 @@ class WebScraper:
         time.sleep(2)
         address_input = self.driver.execute_script("""return document.querySelector('[name="address"]')""");
         address_input.clear()
+        time.sleep(1)
         address_input.send_keys(address)
         
         try:
@@ -232,6 +242,7 @@ class WebScraper:
 
         license_input = self.wait.until(EC.presence_of_element_located((By.ID, "plateInput")))
         license_input.clear()
+        time.sleep(1)
         license_input.send_keys(license)
         
         state_dropdown = Select(self.wait.until(EC.presence_of_element_located((By.ID, "plateState"))))
@@ -246,6 +257,7 @@ class WebScraper:
     async def input_email(self):
         email_input = self.wait.until(EC.presence_of_element_located((By.ID, "email")))
         email_input.clear()
+        time.sleep(1)
         email_input.send_keys(email)
 
         try:
@@ -509,7 +521,7 @@ class WebScraper:
 
         result_parts.append("-----------------Assets-----------------")
         try:
-            assets_table = self.driver.find_element(By.CLASS_NAME, "table-automobiles")
+            assets_table = driver.execute_script("return document.querySelector('.table-automobiles');")  
             rows = assets_table.find_elements(By.TAG_NAME, "tr")
             length = len(rows)
             headers = rows[0].find_elements(By.TAG_NAME, "th")

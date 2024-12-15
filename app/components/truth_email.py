@@ -78,11 +78,11 @@ class WebScraper:
             
             try:
                 self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, "search-results")))
-                person_search_results = self.driver.find_elements(By.CLASS_NAME, "search-results")
+                person_search_results = self.driver.execute_script("return document.getElementsByClassName('search-results')")
                 for person in person_search_results:
                     try:
                         time.sleep(2)
-                        link = person.find_element(By.CLASS_NAME, 'button-link')
+                        link = self.driver.execute_script("return document.getElementsByClassName('button-link')[0]")
                         href = link.get_attribute('href')
                         people_list.append(href)
                     except NoSuchElementException:
@@ -107,14 +107,22 @@ class WebScraper:
 
     async def input_email(self):
         email_tab = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, "icon.tab-icon.email")))
-        email_tab.click()
+ 
+        # Click email tab
+        self.driver.execute_script("document.querySelector('.icon.tab-icon.email').click()")
         
+        # Wait for and input email
+        print(email)
         email_element = self.wait.until(EC.presence_of_element_located((By.NAME, 'email')))
+        email_element = self.driver.execute_script(f"""return document.querySelector('[name="email"]')""")
         email_element.clear()
+        time.sleep(1)
+
         email_element.send_keys(email)
         
-        submit_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")))
-        submit_button.click()
+        # Click submit button
+        self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@type='submit']")))
+        self.driver.execute_script("document.querySelector('button[type=\"submit\"]').click()")
    
     async def scrape_each_person(self, link):
         try:

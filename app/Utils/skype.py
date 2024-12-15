@@ -168,11 +168,13 @@ class WebScraper:
     def input_email(self):
         email_element = self.wait.until(EC.presence_of_element_located((By.ID, "PIN_1")))
         email_element.clear()
+        time.sleep(1)
         email_element.send_keys(input_value)
         
     def input_phone(self):
         phone_element = self.wait.until(EC.presence_of_element_located((By.ID, "PIN_1")))
         phone_element.clear()
+        time.sleep(1)
         phone_element.send_keys(input_value)
 
     def close_driver(self):  

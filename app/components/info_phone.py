@@ -35,50 +35,51 @@ class WebScraper:
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument('--ignore-certificate-errors')  
         chrome_options.add_argument("--user-data-dir=C:/Info_SeleniumChromeProfile")
+        chrome_options.add_experimental_option("debuggerAddress", "localhost:9222")
         
         # chrome_options.add_argument("--headless=new")  # Modern headless mode
         
         # Add performance-focused options
-        chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument('--disable-extensions')
-        chrome_options.add_argument('--disable-infobars')
-        chrome_options.add_argument('--dns-prefetch-disable')
-        chrome_options.add_argument('--disable-browser-side-navigation')
+        # chrome_options.add_argument('--disable-gpu')
+        # chrome_options.add_argument('--disable-extensions')
+        # chrome_options.add_argument('--disable-infobars')
+        # chrome_options.add_argument('--dns-prefetch-disable')
+        # chrome_options.add_argument('--disable-browser-side-navigation')
         
-        # More aggressive content blocking
-        chrome_prefs = {
-            "profile.default_content_setting_values": {
-                "images": 2,
-                "media_stream": 2,
-                "plugins": 2,
-                "popups": 2,
-                "geolocation": 2,
-                "notifications": 2,
-                "auto_select_certificate": 2,
-                "fullscreen": 2,
-                "mouselock": 2,
-                "mixed_script": 2,
-                "media_stream_mic": 2,
-                "media_stream_camera": 2,
-                "protocol_handlers": 2,
-                "ppapi_broker": 2,
-                "automatic_downloads": 2,
-                "midi_sysex": 2,
-                "push_messaging": 2,
-                "ssl_cert_decisions": 2,
-                "metro_switch_to_desktop": 2,
-                "protected_media_identifier": 2,
-                "app_banner": 2,
-                "site_engagement": 2,
-                "durable_storage": 2
-            }
-        }
-        chrome_options.add_experimental_option("prefs", chrome_prefs)
+        # # More aggressive content blocking
+        # chrome_prefs = {
+        #     "profile.default_content_setting_values": {
+        #         "images": 2,
+        #         "media_stream": 2,
+        #         "plugins": 2,
+        #         "popups": 2,
+        #         "geolocation": 2,
+        #         "notifications": 2,
+        #         "auto_select_certificate": 2,
+        #         "fullscreen": 2,
+        #         "mouselock": 2,
+        #         "mixed_script": 2,
+        #         "media_stream_mic": 2,
+        #         "media_stream_camera": 2,
+        #         "protocol_handlers": 2,
+        #         "ppapi_broker": 2,
+        #         "automatic_downloads": 2,
+        #         "midi_sysex": 2,
+        #         "push_messaging": 2,
+        #         "ssl_cert_decisions": 2,
+        #         "metro_switch_to_desktop": 2,
+        #         "protected_media_identifier": 2,
+        #         "app_banner": 2,
+        #         "site_engagement": 2,
+        #         "durable_storage": 2
+        #     }
+        # }
+        # chrome_options.add_experimental_option("prefs", chrome_prefs)
         
         webdriver_service = Service(ChromeDriverManager().install())  
 
         driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)  
-        driver.maximize_window()
+        # driver.maximize_window()
         return driver
     
     # def take_screenshot(self, step_name):
@@ -123,6 +124,7 @@ class WebScraper:
     async def input_phone(self):
         phone_input = self.wait.until(EC.presence_of_element_located((By.ID, "phone")))
         phone_input.clear()
+        time.sleep(1)
         phone_input.send_keys(phone)
 
         try:

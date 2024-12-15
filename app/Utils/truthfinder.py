@@ -147,21 +147,25 @@ class WebScraper:
         if first_name:
             firstName_element = self.wait.until(EC.presence_of_element_located((By.NAME, 'firstName')))
             firstName_element.clear()
+            time.sleep(1)
             firstName_element.send_keys(first_name)
         
         if second_name:
             lastName_element = self.wait.until(EC.presence_of_element_located((By.NAME, 'lastName')))
             lastName_element.clear()
+            time.sleep(1)
             lastName_element.send_keys(second_name)
         
         if middle_name:  # Only handle middle name if it's not empty
             middleName_element = self.wait.until(EC.presence_of_element_located((By.NAME, 'middleInitial')))
             middleName_element.clear()
+            time.sleep(1)
             middleName_element.send_keys(middle_name)
         
         if city:
             city_element = self.wait.until(EC.presence_of_element_located((By.NAME, 'city')))
             city_element.clear()
+            time.sleep(1)
             city_element.send_keys(city)
 
         if state:
@@ -171,6 +175,7 @@ class WebScraper:
         if age:
             age_element = self.wait.until(EC.presence_of_element_located((By.NAME, 'age')))
             age_element.clear()
+            time.sleep(1)
             age_element.send_keys(age)
 
         submit_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")))
@@ -193,6 +198,7 @@ class WebScraper:
         
         email_element = self.wait.until(EC.presence_of_element_located((By.NAME, 'email')))
         email_element.clear()
+        time.sleep(1)
         email_element.send_keys(email)
         
         submit_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")))
@@ -205,11 +211,13 @@ class WebScraper:
         if street_address:
             address_element = self.wait.until(EC.presence_of_element_located((By.NAME, 'street')))
             address_element.clear()
+            time.sleep(1)
             address_element.send_keys(street_address)
             
         if city:
             city_element = self.wait.until(EC.presence_of_element_located((By.NAME, 'city')))
             city_element.clear()
+            time.sleep(1)
             city_element.send_keys(city)
             
         if state:
@@ -219,6 +227,7 @@ class WebScraper:
         if zip_code:
             zip_element = self.wait.until(EC.presence_of_element_located((By.NAME, 'zip')))
             zip_element.clear()
+            time.sleep(1)
             zip_element.send_keys(zip_code)
         
         submit_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")))

@@ -14,28 +14,37 @@ def run_async_scraper(scraper_func, email):
     finally:
         loop.close()
 
-async def run_scraper(email):
-    # Create a thread pool
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        # Submit both scrapers to run in separate threads
-        future_info = executor.submit(run_async_scraper, run_scraper_info, email)
-        future_truth = executor.submit(run_async_scraper, run_scraper_truth, email)
+# async def run_scraper(email):
+#     # Create a thread pool
+#     with ThreadPoolExecutor(max_workers=2) as executor:
+#         # Submit both scrapers to run in separate threads
+#         future_info = executor.submit(run_async_scraper, run_scraper_info, email)
+#         future_truth = executor.submit(run_async_scraper, run_scraper_truth, email)
         
-        # Handle results and exceptions
-        # scrapers = [('Info Scraper', future_info), ('Truth Scraper', future_truth)]
-        scrapers = [('Info Scraper', future_info)]
-        results = []
-        for name, future in scrapers:
-            try:
-                result = future.result()
-                results.append(result)
-                print(f"{name} completed successfully")
-            except Exception as e:
-                print(f"{name} failed with error: {e}")
+#         # Handle results and exceptions
+#         scrapers = [('Info Scraper', future_info), ('Truth Scraper', future_truth)]
+#         results = []
+#         for name, future in scrapers:
+#             try:
+#                 result = future.result()
+#                 results.append(result)
+#                 print(f"{name} completed successfully")
+#             except Exception as e:
+#                 print(f"{name} failed with error: {e}")
         
-        print(results)
+#         return results
 
-        return results
+async def run_scraper(email):  
+    # print("email: ", email)
+    with ThreadPoolExecutor(max_workers=2) as executor:  
+        truth_future = executor.submit(run_async_scraper, run_scraper_truth, email)  
+        info_future = executor.submit(run_async_scraper, run_scraper_info, email)  
+
+        truth_result = truth_future.result()  
+        yield truth_result  
+
+        info_result = info_future.result()  
+        yield info_result  
 
 # # Example usage
 # if __name__ == "__main__":
